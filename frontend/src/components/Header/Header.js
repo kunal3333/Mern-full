@@ -1,18 +1,57 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../Logo/Logo";
 import { CiSearch } from "react-icons/ci";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import {toast} from 'react-toastify'
+
+
 
 const Header = () => {
+
+
+  const [user, setUser] = useState(null);
+
+  // Simulate fetching the user from localStorage, API, or other source
+  useEffect(() => {
+    const fetchUserData = () => {
+      // Example: You might fetch this from localStorage or an API
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) {
+        setUser(userData);
+      }
+    };
+
+    fetchUserData(); // Simulate fetching user data on mount
+  }, []);
+
+  const SummaryApi = 'https:///userLogout'; 
+
+
+  const handleLogout = async() =>{
+    const fetchData =await fetch(SummaryApi.logout_user.url,{
+      method:SummaryApi.logout_user.method,
+      credentials:"include"
+    })
+
+    const data = await fetchData.json()
+    if(data.sucess){
+toast.success(data.message)
+  }
+
+  if(data.error){
+    toast.error (data.message)
+  }
+}
   return (
     <header className="h-16 shadow-md">
       <div className="h-full container mx-auto flex items-center px-4 justify-between">
         <div className="">
 
-      <Link to ={"/"}>    <Logo w={90} h={50} />
-        </Link>
+      <Link to ={"/"}>
+      <Logo w={90} h={50} />
+      </Link>
         </div>
 
         <div className="hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2">
@@ -37,8 +76,14 @@ const Header = () => {
           </div>
 
           <div>
-            <Link to ={"/login"} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Login</Link>
-
+          {
+                    user?._id  ? (
+                      <button onClick={handleLogout} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Logout</button>
+                    )
+                    : (
+                    <Link to={"/login"} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Login</Link>
+                    )
+                  } 
           </div>
 
         </div>
